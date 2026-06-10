@@ -1,0 +1,71 @@
+---
+name: azdo-work-items
+description: Create and update Azure DevOps work items through the Sprintly backend in this repository. Use when Codex is asked to make Azure DevOps work items, backlog items, tasks, bugs, user stories, PBIs, child items, comments, or links via the existing Sprintly BE/API instead of calling Azure DevOps directly.
+---
+
+# Azure DevOps Work Items
+
+Use the Sprintly backend as the only integration point. Do not call Azure DevOps REST APIs directly unless the user explicitly asks to bypass Sprintly.
+
+## Workflow
+
+1. Confirm the backend base URL. Default to `http://localhost:8181` for this repo.
+2. Check backend health with `GET /api/health`.
+3. Resolve the target project with `GET /api/projects`; accept either project id or project name from the user.
+4. Always retrieve the project's iterations using `GET /api/projects/{projectId}/iterations`. Identify the current active sprint (by checking for timeframe indicators like `?timeframe=current`, comparing the current date to the start/end dates if available, or finding the active flag/metadata in the returned iterations) and always use its exact `path` as `iterationPath` for the work item.
+5. If the user asks for an assignee, load members with `GET /api/projects/{projectId}/members` and prefer `uniqueName` for `assignedTo`.
+6. Draft the details of the work item to be created or updated (e.g. title, type, description, assignee, iteration, or field updates) and present them clearly to the user.
+7. Request explicit confirmation and approval from the user before executing the create or update action. Do not make any POST/PATCH API calls or run create/update helper scripts until the user approves.
+8. Create the work item with `POST /api/projects/{projectId}/workitems` or update it with `PATCH /api/projects/{projectId}/workitems/{id}`.
+9. Report the created/updated work item `id`, `title`, `type`, `state`, `assignedTo`, and `iterationPath`.
+
+If required inputs are missing, make a conservative assumption only when the repo context clearly provides it. Otherwise ask one concise question before presenting the draft for user confirmation.
+
+## From Git History
+
+When the user asks to create work items from Git history, commits, branches, or a commit range, do not derive items from commit titles alone. Inspect the actual changes before drafting each work item:
+
+1. Identify the relevant commits with `git log` or the user-provided range.
+2. Read each commit's diff with `git show --stat --patch <commit>` or an equivalent command. For ranges, inspect the combined and/or per-commit diff as needed.
+3. Use the changed files, code paths, behavior changes, tests, migrations, and config updates from the diff to write the work item description.
+4. Keep the title concise, but make the description capture the implemented behavior and meaningful technical details discovered from the diff.
+5. If a commit title and diff disagree, trust the diff and mention any ambiguity before asking the user for confirmation and creating live Azure DevOps data.
+
+## Create Request Shape
+
+Send JSON:
+
+```json
+{
+  "title": "Required title",
+  "type": "User Story",
+  "description": "Optional HTML or plain text description",
+  "assignedTo": "optional.user@example.com",
+  "parentId": 12345,
+  "iterationPath": "Project\\Sprint 1"
+}
+```
+
+Use common Azure DevOps types exactly as the target project expects: `Epic`, `Feature`, `Product Backlog Item`, `User Story`, `Bug`, or `Task`.
+
+## Helper Script
+
+Prefer the bundled PowerShell helper for creating a single item:
+
+```powershell
+.agents\skills\azdo-work-items\scripts\create_work_item.ps1 `
+  -ProjectId "MyProject" `
+  -Title "Add export button" `
+  -Type "Task" `
+  -Description "Create an export button on the board." `
+  -ParentId 12345 `
+  -IterationPath "MyProject\\Sprint 1"
+```
+
+The script checks `/api/health`, posts to Sprintly, and prints the created item JSON.
+
+For batch creation, loop over structured input and call the same backend endpoint. Keep parent-child order explicit: create the parent first, then create children using the returned parent `id`.
+
+## References
+
+Read `references/sprintly-api.md` when you need endpoint details, request fields, response fields, update/comment/link examples, or troubleshooting notes.

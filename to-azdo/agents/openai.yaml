@@ -1,0 +1,4 @@
+interface:
+  display_name: "PRD to Azure DevOps"
+  short_description: "Convert PRDs into Azure DevOps work items"
+  default_prompt: "Use $to-azdo to convert this PRD into Azure DevOps work items through Sprintly."
