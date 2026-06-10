@@ -1,12 +1,6 @@
-﻿---
+---
 name: azdo-work-items
-description: >
-  Create and update Azure DevOps work items through the Sprintly backend. Use when Codex is asked to make
-  Azure DevOps work items, backlog items, tasks, bugs, user stories, PBIs, child items, comments, or links.
-  Also triggers when the user mentions "buat story", "tulis backlog", "pecah task", "buat feature ADO",
-  "acceptance criteria", "given when then", or asks for sprint planning templates. This skill covers
-  work item writing rules, title formats, description templates, acceptance criteria (Given/When/Then),
-  and required field checklists — then creates or updates items via the Sprintly BE/API.
+description: Create and update Azure DevOps work items through the Sprintly backend. Use when Codex is asked to make Azure DevOps work items, backlog items, tasks, bugs, user stories, PBIs, child items, comments, or links. Also triggers when the user mentions "buat story", "tulis backlog", "pecah task", "buat feature ADO", "acceptance criteria", "given when then", or asks for sprint planning templates. This skill covers work item writing rules, title formats, description templates, acceptance criteria (Given/When/Then), and required field checklists — then creates or updates items via the Sprintly BE/API.
 ---
 
 # Azure DevOps Work Items
