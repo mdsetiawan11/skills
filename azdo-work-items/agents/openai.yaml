@@ -1,4 +1,4 @@
 interface:
   display_name: "Azure DevOps Work Items"
-  short_description: "Create and update Azure DevOps work items with user confirmation"
-  default_prompt: "Use $azdo-work-items to create or update Azure DevOps work items through the Sprintly backend, with user confirmation."
+  short_description: "Create and update Azure DevOps work items using Sprintly and env credentials"
+  default_prompt: "Use $azdo-work-items to create or update Azure DevOps work items through the Sprintly backend, requiring AZDO_ORG and AZDO_PAT from environment variables and user confirmation before writes."

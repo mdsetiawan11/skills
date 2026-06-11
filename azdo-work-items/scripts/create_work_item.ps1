@@ -19,6 +19,22 @@ $ErrorActionPreference = "Stop"
 
 $base = $BaseUrl.TrimEnd("/")
 
+$azdoOrg = $env:AZDO_ORG
+$azdoPat = $env:AZDO_PAT
+
+if ([string]::IsNullOrWhiteSpace($azdoOrg)) {
+    throw 'Missing AZDO_ORG environment variable. Set it with: setx AZDO_ORG "my-organization"; then restart the terminal/Codex session.'
+}
+
+if ([string]::IsNullOrWhiteSpace($azdoPat)) {
+    throw 'Missing AZDO_PAT environment variable. Set it with: setx AZDO_PAT "<pat>"; then restart the terminal/Codex session. Do not paste the PAT into chat.'
+}
+
+$headers = @{
+    "X-Azdo-Org" = $azdoOrg.Trim()
+    "X-Azdo-Pat" = $azdoPat.Trim()
+}
+
 try {
     Invoke-RestMethod -Method Get -Uri "$base/api/health" | Out-Null
 }
@@ -56,6 +72,7 @@ $project = [System.Uri]::EscapeDataString($ProjectId)
 $created = Invoke-RestMethod `
     -Method Post `
     -Uri "$base/api/projects/$project/workitems" `
+    -Headers $headers `
     -ContentType "application/json" `
     -Body $json
 

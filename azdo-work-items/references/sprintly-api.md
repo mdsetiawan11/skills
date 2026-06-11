@@ -2,6 +2,17 @@
 
 Default local backend URL: `http://localhost:8181`.
 
+Azure DevOps-backed endpoints require request headers:
+
+```http
+X-Azdo-Org: <value from AZDO_ORG>
+X-Azdo-Pat: <value from AZDO_PAT>
+```
+
+Read `AZDO_ORG` and `AZDO_PAT` from Windows/PowerShell environment variables. If either value is
+missing, stop and tell the user to set Windows environment variables with `setx`, then restart the
+terminal/Codex session. Do not ask the user to paste the PAT into chat and never print it.
+
 ## Endpoints
 
 - `GET /api/health` returns backend status.
@@ -18,6 +29,8 @@ Default local backend URL: `http://localhost:8181`.
 ## Create Work Item
 
 `POST /api/projects/{projectId}/workitems`
+
+Headers: `X-Azdo-Org` and `X-Azdo-Pat` from environment variables.
 
 ```json
 {
@@ -65,6 +78,8 @@ Response shape:
 
 `PATCH /api/projects/{projectId}/workitems/{id}` accepts a JSON object where keys are Azure DevOps field names:
 
+Headers: `X-Azdo-Org` and `X-Azdo-Pat` from environment variables.
+
 ```json
 {
   "System.Title": "Updated title",
@@ -79,6 +94,8 @@ Response shape:
 
 `POST /api/projects/{projectId}/workitems/{id}/comments`
 
+Headers: `X-Azdo-Org` and `X-Azdo-Pat` from environment variables.
+
 ```json
 { "text": "Implementation note or acceptance detail." }
 ```
@@ -86,6 +103,8 @@ Response shape:
 ## Links
 
 `POST /api/projects/{projectId}/workitems/{id}/links`
+
+Headers: `X-Azdo-Org` and `X-Azdo-Pat` from environment variables.
 
 To link another work item, pass the target id as `url`:
 
@@ -110,6 +129,7 @@ To link an external URL, pass the URL:
 ## Troubleshooting
 
 - If `/api/health` fails, start the backend from `backend` with `dotnet run`; this repo binds to `http://localhost:8181`.
-- If Azure DevOps calls fail, check `AZDO_BASE_URL`, `AZDO_ORG`, `AZDO_PAT`, and `AZDO_API_VERSION` in environment variables or `backend/appsettings.Development.json`.
+- If Azure DevOps calls fail with 401 or missing header errors, check that the request includes `X-Azdo-Org` and `X-Azdo-Pat` headers sourced from `AZDO_ORG` and `AZDO_PAT` environment variables.
+- The backend reads `AZDO_BASE_URL` and `AZDO_API_VERSION` from backend configuration; `AZDO_ORG` and `AZDO_PAT` are per-request headers.
 - Prefer project name when the user gives a display name; the backend resolves several endpoints by project name or id.
 - Use exact iteration `path`, not iteration `name`, for `iterationPath`.
