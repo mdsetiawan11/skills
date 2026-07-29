@@ -1,6 +1,6 @@
 ---
 name: azdo-work-items
-description: Create and update Azure DevOps work items through the Sprintly backend. Use when Codex is asked to make Azure DevOps work items, backlog items, tasks, bugs, user stories, PBIs, child items, comments, or links. Also triggers when the user mentions "buat story", "tulis backlog", "pecah task", "buat feature ADO", "acceptance criteria", "given when then", or asks for sprint planning templates. This skill covers work item writing rules, title formats, description templates, acceptance criteria (Given/When/Then), and required field checklists — then creates or updates items via the Sprintly BE/API.
+description: Create and update Azure DevOps work items through the Sprintly backend. Use when Agent is asked to make Azure DevOps work items, backlog items, tasks, bugs, user stories, PBIs, child items, comments, or links. Also triggers when the user mentions "buat story", "tulis backlog", "pecah task", "buat feature ADO", "acceptance criteria", "given when then", or asks for sprint planning templates. This skill covers work item writing rules, title formats, description templates, acceptance criteria (Given/When/Then), and required field checklists — then creates or updates items via the Sprintly BE/API.
 ---
 
 # Azure DevOps Work Items
@@ -77,20 +77,20 @@ Requirements from the user's perspective. Must be completable within **1 sprint*
 ```html
 <h2>User Story</h2>
 <p>
-  <strong>As a</strong> [role/persona],<br>
-  <strong>I want</strong> [feature/capability],<br>
+  <strong>As a</strong> [role/persona],<br />
+  <strong>I want</strong> [feature/capability],<br />
   <strong>So that</strong> [business benefit/goal].
 </p>
 
 <h2>Acceptance Criteria</h2>
 <p>
-  <strong>Given</strong> [initial condition]<br>
-  <strong>When</strong> [action performed]<br>
+  <strong>Given</strong> [initial condition]<br />
+  <strong>When</strong> [action performed]<br />
   <strong>Then</strong> [expected result]
 </p>
 <p>
-  <strong>Given</strong> [edge case / error condition]<br>
-  <strong>When</strong> [action]<br>
+  <strong>Given</strong> [edge case / error condition]<br />
+  <strong>When</strong> [action]<br />
   <strong>Then</strong> [result]
 </p>
 
@@ -183,7 +183,7 @@ Then proceed with the Sprintly workflow:
 2. Require Azure DevOps credentials from Windows environment variables before any Sprintly request that touches Azure DevOps:
    - Read `$env:AZDO_ORG` and `$env:AZDO_PAT`.
    - If either is missing or blank, stop and instruct the user to set them in Windows environment variables. Do not ask the user to paste the PAT into chat.
-   - Use `setx AZDO_ORG "my-organization"` and `setx AZDO_PAT "<pat>"`, then tell the user to restart the terminal/Codex session so the new variables are visible.
+   - Use `setx AZDO_ORG "my-organization"` and `setx AZDO_PAT "<pat>"`, then tell the user to restart the terminal/Agent session so the new variables are visible.
    - For the current PowerShell session only, the user may also run `$env:AZDO_ORG="my-organization"` and `$env:AZDO_PAT="<pat>"`.
 3. Send Azure DevOps credentials to Sprintly BE on every Azure DevOps-backed request using headers: `X-Azdo-Org: $env:AZDO_ORG` and `X-Azdo-Pat: $env:AZDO_PAT`. Never log, print, summarize, or include the PAT in final output.
 4. Check backend health with `GET /api/health`; this endpoint does not require Azure DevOps headers.
@@ -199,7 +199,7 @@ Then proceed with the Sprintly workflow:
 9. Request explicit user confirmation before any create or update action. Do not make POST/PATCH calls
    or run helper scripts until the user approves.
 10. Create with `POST /api/projects/{projectId}/workitems` or update with
-   `PATCH /api/projects/{projectId}/workitems/{id}`.
+    `PATCH /api/projects/{projectId}/workitems/{id}`.
 11. Report the created/updated work item: `id`, `title`, `type`, `state`, `assignedTo`, `iterationPath`.
 
 If required inputs are missing, make a conservative assumption only when the repo context clearly
